@@ -1,0 +1,45 @@
+/* Remove list formatting from Promo UL/LI */
+#promo, #promo li
+{
+    margin:0;
+    padding:0;
+    list-style-type:none;
+}
+ 
+/* Styles for the optional promo navigation container */
+#promonav
+{
+    padding:4px;
+    background:#eee;
+    border:1px solid #e0e0e0;
+    margin-top:1px;
+}
+ 
+/* Keep the next button at the right edge */
+#promonav .next
+{
+    float:right;
+}
+ 
+/* Link styles in promo navigation  */
+#promonav a
+{
+    padding:0 3px;
+    border:1px solid #eee;
+    text-decoration:none;
+    outline:0;
+    color:#777;
+}
+ 
+/* Style applied on mouseover of promo navigation link(s) */
+#promonav a:hover
+{
+    color:#000;
+}
+/* The index automatically gets an activeSlide class, use this to indicate the current slide */
+#promoindex a.activeSlide
+{
+    font-weight:bold;
+    background:#fff;
+    border-color:#ccc;
+}
