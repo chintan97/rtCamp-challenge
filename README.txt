@@ -39,3 +39,11 @@ other site data'.
 
 -----------------------------------------------------------------------------------------------------
 rtCamp is a registered trademark of rtCamp Solutions Pvt. Ltd.
+
+
+
+EDIT:
+Fixed errors showing if user has 0 followers.
+Fixed file extension error.
+Updated search box which was only showing followers. Now any public accounts can be searched.
+Searched user's tweets can be downloaded.
