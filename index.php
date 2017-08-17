@@ -34,6 +34,7 @@ article {
 	Task 2: Follower, Follower timeline<br/><br/>
 	Task 3: Download Tweets<br/><br/>
 	<h3>Designed by: Chintan Patel</h3>
+	<h4>[If account has thousands tweets, wait for 2-3 seconds to load tweets in slider]</h4>
 </nav>
 <article>
 <?php
@@ -220,14 +221,18 @@ else{
 			echo "Handle id: @<a href='#' onClick=ajaxLoad('".$items['id_str']."')>".$items['screen_name']."</a><br /><hr />";
 			$count++;
 		}
-		
+		if ($count == 1)
+		{
+			echo "<h3 style='color:green'>You have no follower...</h3>";
+		}
 		
 		// Now for followers search, creating xml file which will store follower name and id
 		// Here maximum 5000 followers data can be fetched.
 		// First ids of followers are fetched and array of 100 ids are created to fetch data 
 		// from ids using users/lookup . followers/list.json can fetch maximum 300 followers.
 		
-		$xml = new DOMDocument();
+		$xml = new DOMDocument('1.0', 'utf-8');
+		//$xml->xmlEndoding='UTF-8';
 		$xml_root = $xml->createElement('root');
 		$xml->appendChild($xml_root);
 		$xml->save("$user.xml");
@@ -275,10 +280,13 @@ else{
 					if ($items['protected'] !== true){
 					$xml_usr = $xml->createElement('user');
 					$xml_nm = $xml->createElement('name1');
+					$xml_hn = $xml->createElement('handle1');
 					$xml_id = $xml->createElement('id1');
 					$xml_nm->nodeValue = $items['name'];
+					$xml_hn->nodeValue = $items['screen_name'];
 					$xml_id->nodeValue = $items['id_str'];
 					$xml_usr->appendChild($xml_nm);
+					$xml_usr->appendChild($xml_hn);
 					$xml_usr->appendChild($xml_id);
 					$xml_root->appendChild($xml_usr);
 					$arrCount++;
@@ -292,32 +300,38 @@ else{
 			$tempCount++;
 		}
 
-		$url = "https://api.twitter.com/1.1/users/lookup.json";
-		$requestMethod = "GET";
-				
-		$getfield = "?user_id=$idString";
-		$twitter = new TwitterAPIExchange($settings);
+		if ($tempCount > 1)
+		{
+			$url = "https://api.twitter.com/1.1/users/lookup.json";
+			$requestMethod = "GET";
+					
+			$getfield = "?user_id=$idString";
+			$twitter = new TwitterAPIExchange($settings);
 
-		$string1 = json_decode($twitter->setGetfield($getfield)
-		->buildOauth($url, $requestMethod)
-		->performRequest(),$assoc = TRUE);
-				
-		$xml = new DOMDocument();
-		$xml->load("$user.xml");
-		$xml_root=$xml->documentElement;
-				
-		foreach ($string1 as $items){
-			$xml_usr = $xml->createElement('user');
-			$xml_nm = $xml->createElement('name1');
-			$xml_id = $xml->createElement('id1');
-			$xml_nm->nodeValue = $items['name'];
-			$xml_id->nodeValue = $items['id_str'];
-			$xml_usr->appendChild($xml_nm);
-			$xml_usr->appendChild($xml_id);
-			$xml_root->appendChild($xml_usr);
-			$arrCount++;
+			$string1 = json_decode($twitter->setGetfield($getfield)
+			->buildOauth($url, $requestMethod)
+			->performRequest(),$assoc = TRUE);
+					
+			$xml = new DOMDocument();
+			$xml->load("$user.xml");
+			$xml_root=$xml->documentElement;
+					
+			foreach ($string1 as $items){
+				$xml_usr = $xml->createElement('user');
+				$xml_nm = $xml->createElement('name1');
+				$xml_hn = $xml->createElement('handle1');
+				$xml_id = $xml->createElement('id1');
+				$xml_nm->nodeValue = $items['name'];
+				$xml_hn->nodeValue = $items['screen_name'];
+				$xml_id->nodeValue = $items['id_str'];
+				$xml_usr->appendChild($xml_nm);
+				$xml_usr->appendChild($xml_hn);
+				$xml_usr->appendChild($xml_id);
+				$xml_root->appendChild($xml_usr);
+				$arrCount++;
+			}
+			$xml->save($user.".xml");
 		}
-		$xml->save($user.".xml");
 	
 	?>
 
@@ -367,7 +381,7 @@ else{
 		$xml_root_tweet = $xml_tweet->createElement('root');
 		$xml_tweet->appendChild($xml_root_tweet);
 		$xml_tweet->save($_SESSION['user_name']."_tweets.xml");
-		
+	
 		$url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
 		$requestMethod = "GET";
 	
@@ -409,7 +423,7 @@ else{
 		}
 	?>
 
-	<a href="<?php echo $_SESSION['user_name']."_tweets.xml"; ?>" download="MyTweets"><h3 style="color:blue">Download tweets in xml format</h3></a>
+	<a href="<?php echo $_SESSION['user_name']."_tweets.xml"; ?>" download="MyTweets.xml"><h3 style="color:blue">Download tweets in xml format</h3></a>
 	
 	<?php
 	
